@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import emailConfig from './config/emailConfig';
+import { validationSchema } from './config/validationSchema';
 
 @Module({
   imports: [
