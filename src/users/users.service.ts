@@ -1,15 +1,29 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { EmailService } from 'src/email/email.service';
 import * as uuid from 'uuid';
 import { UserInfo } from './UserInfo';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import { ulid } from 'ulid';
 
 @Injectable()
 export class UsersService {
-  constructor(private emailService: EmailService) {}
+  constructor(
+    private emailService: EmailService,
+    // UsersService에 @InjectRepository 데코레이터로 유저 저장소를 주입
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
+  ) {}
   async createUser(name: string, email: string, password: string) {
     /* 가입하려는 유저가 존재하는지 검사합니다. 만약 이미 존재하는 유저, 즉 가입 처리된 유저라면 
     에러를 발생시킵니다. DB를 연동한 후 구현을 해야 하므로 일단 false를 리턴하도록 합니다.*/
-    await this.checkUserExists(email);
+    const userExist = await this.checkUserExists(email);
+
+    if (userExist)
+      throw new UnprocessableEntityException(
+        '해당 이메일로는 가입할 수 없습니다',
+      );
 
     const signupVerifyToken = uuid.v1();
 
@@ -45,13 +59,17 @@ export class UsersService {
     throw new Error('Method not implemented');
   }
 
-  private checkUserExists(email: string) {
+  private async checkUserExists(email: string): Promise<boolean> {
     /* 가입하려는 유저가 존재하는지 검사합니다. 만약 이미 존재하는 유저, 즉 가입 처리된 유저라면 
     에러를 발생시킵니다. DB를 연동한 후 구현을 해야 하므로 일단 false를 리턴하도록 합니다.*/
-    return false; // TODO: DB 연동 후 구현
+    const user = await this.userRepository.findOne({
+      where: { email: email },
+    });
+
+    return user !== undefined;
   }
 
-  private saveUser(
+  private async saveUser(
     name: string,
     email: string,
     password: string,
@@ -61,7 +79,13 @@ export class UsersService {
     이떄 토큰이 필요한데, 토큰은 유저가 회원 가입 메일을 받고 링크를 눌러 이메일 인증을 할 때 다시 받게 되는
     토큰입니다. 이 토큰으로 현재 가입하려는 회원이 본인의 이메일로 인증한 것인지 한 번 더 검증하는 장치를
     마련합니다. 토큰을 만들 때는 유효 기간을 설정하여 일정 기간 동안만 인증이 가능하도록 할 수도 있습니다.*/
-    return; // TODO: DB 연동 후 구현
+    const user = new UserEntity(); // 새로운 유저 엔티티 객체를 생성
+    user.id = ulid(); // 인수로 전달받은 유저 정보를 엔티티에 설정
+    user.name = name;
+    user.email = email;
+    user.password = password;
+    user.signupVerifyToken = signupVerifyToken;
+    await this.userRepository.save(user); // 저장소를 이용하여 엔티티를 데이터베이스에 저장
   }
 
   private async sendMemberJoinEmail(email: string, signupVerifyToken: string) {

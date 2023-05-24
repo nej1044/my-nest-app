@@ -3,6 +3,8 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import emailConfig from './config/emailConfig';
 import { validationSchema } from './config/validationSchema';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserEntity } from './users/entities/user.entity';
 
 @Module({
   imports: [
@@ -17,6 +19,16 @@ import { validationSchema } from './config/validationSchema';
         EmailModule에만 임모트하면 됩니다. */,
       validationSchema /* 환경 변수의 값에 대해 유효성 검사를 수행하도록 joi를 이용하여 유효성 검사
         객체를 작성합니다. */,
+    }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DATABASE_HOST, // 'localhost',
+      port: 3306,
+      username: process.env.DATABASE_USERNAME, // 'root',
+      password: process.env.DATABASE_PASSWORD, // 'test',
+      database: 'test',
+      synchronize: process.env.DATABASE_SYNCHRONIZE === 'true',
+      entities: [UserEntity], // [__dirname + '/**/*.entity{.ts,.js}'],
     }),
   ],
   controllers: [],
