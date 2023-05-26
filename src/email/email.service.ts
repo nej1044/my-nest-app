@@ -1,8 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
+import Mail = require('nodemailer/lib/mailer');
 import * as nodemailer from 'nodemailer';
-import Mail from 'nodemailer/lib/mailer';
+
+import { Inject, Injectable } from '@nestjs/common';
 import emailConfig from 'src/config/emailConfig';
+import { ConfigType } from '@nestjs/config';
 
 interface EmailOptions {
   // 메일 옵션 타입입니다. 수신자, 메일 제목, html 형식의 메일 본문을 가집니다.
@@ -24,7 +25,7 @@ export class EmailService {
       // nodemailer에서 제공하는 Transporter 객체를 생성합니다.
       service: config.service, // .env 파일에 있는 값들을 사용합니다.
       auth: {
-        user: config.auth.user, //  .env 파일에 있는 값들을 사용합니다.
+        user: config.auth.user, // .env 파일에 있는 값들을 사용합니다.
         pass: config.auth.pass, // .env 파일에 있는 값들을 사용합니다.
       },
     });
@@ -43,12 +44,14 @@ export class EmailService {
       to: emailAddress,
       subject: '가입 인증 메일',
       // 메일 본문을 구성합니다. form 태그를 이용하여 POST 요청을 합니다.
-      html: `가입확인 버튼을 누르시면 가입 인증이 완료됩니다.<br />
-              <form action="${url}" method="POST" >
-                <button>가입확인 </button>
-              </form>`,
+      html: `
+        가입확인 버튼를 누르시면 가입 인증이 완료됩니다.<br/>
+        <form action="${url}" method="POST">
+          <button>가입확인</button>
+        </form>
+      `,
     };
 
-    return await this.transporter.sendMail(mailOptions); // transporter 객체를 이용하여 메일을 전송합니다.
+    return await this.transporter.sendMail(mailOptions);
   }
 }

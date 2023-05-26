@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { UsersController } from './users.controller';
-import { EmailModule } from 'src/email/email.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from './entities/user.entity';
+import { AuthModule } from 'src/auth/auth.module';
+import { UserEntity } from './entity/user.entity';
+import { EmailModule } from 'src/email/email.module';
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
 
 @Module({
-  /* UsersModule에서 forFeature() 메서드로 유저 모듈 내에서 사용할 저장소를 등록합니다. */
-  imports: [EmailModule, TypeOrmModule.forFeature([UserEntity])],
+  imports: [EmailModule, TypeOrmModule.forFeature([UserEntity]), AuthModule],
   controllers: [UsersController],
   providers: [UsersService],
 })

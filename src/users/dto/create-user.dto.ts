@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { ClassTransformOptions, TransformationType } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsString,
@@ -7,22 +7,26 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { TransformOptions } from 'stream';
+import { NotIn } from 'src/utils/decorators/not-in';
 
 export class CreateUserDto {
-  @Transform(({ value, obj }) => {
-    if (obj.passowrd.includes(obj.name.trim())) {
-      throw new BadRequestException(
-        'password는 name과 같은 문자열을 포함할 수 없습니다.',
-      );
-    }
-    return value.trim();
+  @Transform((params) => params.value.trim())
+  @NotIn('password', {
+    message: 'password는 name과 같은 문자열을 포함할 수 없습니다.',
   })
   @IsString()
   @MinLength(2)
   @MaxLength(30)
   readonly name: string;
 
+  @Transform(({ value, obj }) => {
+    if (obj.password.includes(value.trim())) {
+      throw new BadRequestException(
+        'password는 name과 같은 문자열을 포함할 수 없습니다.',
+      );
+    }
+    return value.trim();
+  })
   @IsString()
   @IsEmail()
   @MaxLength(60)
@@ -31,17 +35,4 @@ export class CreateUserDto {
   @IsString()
   @Matches(/^[A-Za-z\d!@#$%^&*()]{8,30}$/)
   readonly password: string;
-}
-
-export declare function Transform(
-  transformFn: (params: TransformFnParams) => any,
-  options?: TransformOptions,
-): PropertyDecorator;
-
-export interface TransformFnParams {
-  value: any;
-  key: string;
-  obj: any;
-  type: TransformationType;
-  options: ClassTransformOptions;
 }
