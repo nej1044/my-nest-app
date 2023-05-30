@@ -1,10 +1,15 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import authConfig from './config/authConfig';
 import emailConfig from './config/emailConfig';
 import { validationSchema } from './config/validationSchema';
 import { UsersModule } from './users/users.module';
+// import {
+//   WinstonModule,
+//   utilities as nestWinstonModuleUtilities,
+// } from 'nest-winston';
+// import winston from 'winston';
 
 @Module({
   imports: [
@@ -32,8 +37,23 @@ import { UsersModule } from './users/users.module';
       migrations: [__dirname + '/**/migrations/*.js'],
       migrationsTableName: 'migrations',
     }),
+    // WinstonModule.forRoot({
+    //   transports: [
+    //     // transport 옵션을 설정합니다.
+    //     new winston.transports.Console({
+    //       level: process.env.NODE_ENV === 'production' ? 'info' : 'silly', // 로그 레벨을 개발 환경에 따라 다르도록 지정합니다.
+    //       format: winston.format.combine(
+    //         winston.format.timestamp(), // 로그를 남긴 시각을 함께 표시하도록 합니다.
+    //         nestWinstonModuleUtilities.format.nestLike('MyApp', {
+    //           prettyPrint: true,
+    //         }) /* 어디에서 로그를 남겼는지를 구분하는 appName('MyApp') 과 로그를 읽기 쉽도록 하는 옵션인
+    //         prettyPrint 옵션을 설정합니다. */,
+    //       ),
+    //     }),
+    //   ],
+    // }),
   ],
   controllers: [],
-  providers: [],
+  providers: [Logger],
 })
 export class AppModule {}

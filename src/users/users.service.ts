@@ -3,7 +3,6 @@ import { ulid } from 'ulid';
 import { DataSource, Repository } from 'typeorm';
 import {
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';

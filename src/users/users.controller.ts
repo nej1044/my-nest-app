@@ -7,6 +7,10 @@ import {
   Query,
   Headers,
   UseGuards,
+  Inject,
+  LoggerService,
+  InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/auth.guard';
 import { AuthService } from 'src/auth/auth.service';
@@ -15,19 +19,52 @@ import { UserLoginDto } from './dto/user-login.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { UserInfo } from './UserInfo';
 import { UsersService } from './users.service';
+// import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+// import { Logger as WinstonLogger } from ' winston';
 
 @Controller('users')
 export class UsersController {
   constructor(
+    @Inject(Logger) private readonly logger: LoggerService,
+    // @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    // private readonly logger: LoggerService,
+    // private readonly logger: WinstonLogger,
     private usersService: UsersService,
     private authService: AuthService,
   ) {}
 
   @Post()
   async createUser(@Body() dto: CreateUserDto): Promise<void> {
+    this.printLoggerServiceLog(dto);
+    // this.printWinstonLog(dto);
+
     const { name, email, password } = dto;
     await this.usersService.createUser(name, email, password);
   }
+
+  private printLoggerServiceLog(dto) {
+    try {
+      throw new InternalServerErrorException('test');
+    } catch (e) {
+      this.logger.error('error: ' + JSON.stringify(dto), e.stack);
+    }
+    this.logger.warn('warn: ' + JSON.stringify(dto));
+    this.logger.log('log: ' + JSON.stringify(dto));
+    this.logger.verbose('verbose: ' + JSON.stringify(dto));
+    this.logger.debug('debug: ' + JSON.stringify(dto));
+  }
+
+  // private printWinstonLog(dto) {
+  //   console.log(this.logger.name);
+
+  //   this.logger.error('error: ', dto);
+  //   this.logger.warn('warn: ', dto);
+  //   this.logger.info('info: ', dto);
+  //   this.logger.http('http: ', dto);
+  //   this.logger.verbose('verbose: ', dto);
+  //   this.logger.debug('debug: ', dto);
+  //   this.logger.silly('silly: ', dto);
+  // }
 
   @Post('/email-verify')
   async verifyEmail(@Query() dto: VerifyEmailDto): Promise<string> {
