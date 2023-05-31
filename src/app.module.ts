@@ -6,6 +6,7 @@ import emailConfig from './config/emailConfig';
 import { validationSchema } from './config/validationSchema';
 import { UsersModule } from './users/users.module';
 import { ExeptionModule } from './exeption/exeption.module';
+import { LoggingModule } from './logging/logging.module';
 // import {
 //   WinstonModule,
 //   utilities as nestWinstonModuleUtilities,
@@ -16,6 +17,7 @@ import { ExeptionModule } from './exeption/exeption.module';
   imports: [
     UsersModule,
     ExeptionModule,
+    LoggingModule,
     ConfigModule.forRoot({
       /* envFilePath는 NODE_ENV의 값이 stage라면 dist 디렉터리 아래에 존재하는 파일인 .stage.env
         파일의 절대 경로를 가지게 됩니다.*/
