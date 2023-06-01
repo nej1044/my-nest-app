@@ -7,6 +7,9 @@ import { validationSchema } from './config/validationSchema';
 import { UsersModule } from './users/users.module';
 import { ExeptionModule } from './exeption/exeption.module';
 import { LoggingModule } from './logging/logging.module';
+import { TerminusModule } from '@nestjs/terminus';
+import { HttpModule } from '@nestjs/axios';
+import { HealthCheckController } from './health-check.controller';
 // import {
 //   WinstonModule,
 //   utilities as nestWinstonModuleUtilities,
@@ -18,6 +21,8 @@ import { LoggingModule } from './logging/logging.module';
     UsersModule,
     ExeptionModule,
     LoggingModule,
+    TerminusModule,
+    HttpModule,
     ConfigModule.forRoot({
       /* envFilePath는 NODE_ENV의 값이 stage라면 dist 디렉터리 아래에 존재하는 파일인 .stage.env
         파일의 절대 경로를 가지게 됩니다.*/
@@ -58,6 +63,6 @@ import { LoggingModule } from './logging/logging.module';
     // }),
   ],
   controllers: [],
-  providers: [Logger],
+  providers: [Logger, HealthCheckController],
 })
 export class AppModule {}
