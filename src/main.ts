@@ -1,12 +1,11 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import * as winston from 'winston';
 import {
-  WINSTON_MODULE_NEST_PROVIDER,
-  WinstonModule,
   utilities as nestWinstonModuleUtilities,
+  WinstonModule,
 } from 'nest-winston';
-import winston from 'winston';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -24,12 +23,13 @@ async function bootstrap() {
       ],
     }),
   });
-  // app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
     }),
   );
+  // app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+  // app.useGlobalFilters(new HttpExceptionFilter()); // 전역 필터 적용
   await app.listen(3000);
 }
 bootstrap();

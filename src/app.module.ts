@@ -9,7 +9,7 @@ import { ExeptionModule } from './exeption/exeption.module';
 import { LoggingModule } from './logging/logging.module';
 import { TerminusModule } from '@nestjs/terminus';
 import { HttpModule } from '@nestjs/axios';
-import { HealthCheckController } from './health-check.controller';
+import { HealthCheckController } from './health-check/health-check.controller';
 // import {
 //   WinstonModule,
 //   utilities as nestWinstonModuleUtilities,
@@ -62,7 +62,7 @@ import { HealthCheckController } from './health-check.controller';
     //   ],
     // }),
   ],
-  controllers: [],
-  providers: [Logger, HealthCheckController],
+  controllers: [HealthCheckController],
+  providers: [],
 })
 export class AppModule {}
